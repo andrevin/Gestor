@@ -264,8 +264,24 @@ export default function DocumentTab() {
   const onCreateSubmit = (data: DocumentFormValues) => {
     // Ensure the right ID is set based on document type
     if (data.type === DocumentType.OTHER) {
+      if (!data.otherDocTypeId) {
+        toast({
+          title: "Error",
+          description: "Debe seleccionar un tipo de documento",
+          variant: "destructive",
+        });
+        return;
+      }
       data.subprocessId = null;
     } else {
+      if (!data.subprocessId) {
+        toast({
+          title: "Error", 
+          description: "Debe seleccionar un subproceso",
+          variant: "destructive",
+        });
+        return;
+      }
       data.otherDocTypeId = null;
     }
     createMutation.mutate(data as InsertDocument);
@@ -332,14 +348,14 @@ export default function DocumentTab() {
     if (!subprocessId) return "N/A";
     const subprocess = subprocesses?.find(s => s.id === subprocessId) || 
                        (selectedSubprocess ? undefined : null);
-    
+
     if (subprocess) return subprocess.name;
-    
+
     // If we don't have the subprocess in the current list, try to find its process
     const allSubprocesses = documents
       ?.filter(d => d.subprocessId === subprocessId)
       .map(d => ({ id: d.subprocessId, name: "Desconocido" }));
-    
+
     return allSubprocesses && allSubprocesses.length > 0 
       ? allSubprocesses[0].name 
       : "Desconocido";
@@ -359,14 +375,14 @@ export default function DocumentTab() {
   // Handle adding keywords
   const addKeyword = (formType: 'create' | 'edit') => {
     if (!keywordInput.trim()) return;
-    
+
     const form = formType === 'create' ? createForm : editForm;
     const currentKeywords = form.getValues("keywords") || [];
-    
+
     if (!currentKeywords.includes(keywordInput)) {
       form.setValue("keywords", [...currentKeywords, keywordInput]);
     }
-    
+
     setKeywordInput("");
   };
 
@@ -411,7 +427,7 @@ export default function DocumentTab() {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select 
               value={selectedSubprocess ? String(selectedSubprocess) : "all"} 
               onValueChange={(value) => setSelectedSubprocess(value === "all" ? null : Number(value))}
@@ -429,7 +445,7 @@ export default function DocumentTab() {
                 ))}
               </SelectContent>
             </Select>
-            
+
             <Select 
               value={selectedType || "all"} 
               onValueChange={(value) => setSelectedType(value === "all" ? "" : value as DocumentType)}
@@ -445,7 +461,7 @@ export default function DocumentTab() {
                 <SelectItem value={DocumentType.OTHER}>Otros</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <div className="relative flex-1 min-w-[200px]">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
