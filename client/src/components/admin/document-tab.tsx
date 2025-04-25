@@ -393,9 +393,9 @@ export default function DocumentTab() {
         <CardContent className="p-4">
           <div className="flex mb-4 gap-2 flex-wrap">
             <Select 
-              value={selectedProcess ? String(selectedProcess) : ""} 
+              value={selectedProcess ? String(selectedProcess) : "all"} 
               onValueChange={(value) => {
-                setSelectedProcess(value ? Number(value) : null);
+                setSelectedProcess(value === "all" ? null : Number(value));
                 setSelectedSubprocess(null);
               }}
             >
@@ -403,7 +403,7 @@ export default function DocumentTab() {
                 <SelectValue placeholder="Filtrar por proceso" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los procesos</SelectItem>
+                <SelectItem value="all">Todos los procesos</SelectItem>
                 {processes?.map((process) => (
                   <SelectItem key={process.id} value={String(process.id)}>
                     {process.name}
@@ -413,15 +413,15 @@ export default function DocumentTab() {
             </Select>
             
             <Select 
-              value={selectedSubprocess ? String(selectedSubprocess) : ""} 
-              onValueChange={(value) => setSelectedSubprocess(value ? Number(value) : null)}
+              value={selectedSubprocess ? String(selectedSubprocess) : "all"} 
+              onValueChange={(value) => setSelectedSubprocess(value === "all" ? null : Number(value))}
               disabled={!selectedProcess}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Filtrar por subproceso" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los subprocesos</SelectItem>
+                <SelectItem value="all">Todos los subprocesos</SelectItem>
                 {subprocesses?.map((subprocess) => (
                   <SelectItem key={subprocess.id} value={String(subprocess.id)}>
                     {subprocess.name}
@@ -431,14 +431,14 @@ export default function DocumentTab() {
             </Select>
             
             <Select 
-              value={selectedType} 
-              onValueChange={(value) => setSelectedType(value as DocumentType | "")}
+              value={selectedType || "all"} 
+              onValueChange={(value) => setSelectedType(value === "all" ? "" : value as DocumentType)}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Filtrar por tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los tipos</SelectItem>
+                <SelectItem value="all">Todos los tipos</SelectItem>
                 <SelectItem value={DocumentType.MANUAL}>Manuales</SelectItem>
                 <SelectItem value={DocumentType.SOP}>SOPs</SelectItem>
                 <SelectItem value={DocumentType.TEMPLATE}>Plantillas</SelectItem>
