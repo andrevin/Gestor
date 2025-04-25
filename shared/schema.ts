@@ -1,24 +1,7 @@
 import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-
-// User model
-export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-  fullName: text("full_name").notNull(),
-  isAdmin: boolean("is_admin").default(false).notNull(),
-  kpiConfig: jsonb("kpi_config").default({}).notNull(),
-});
-
-export const insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true,
-  fullName: true,
-  isAdmin: true,
-  kpiConfig: true,
-});
+import { relations } from "drizzle-orm";
 
 // Process categories
 export enum ProcessCategory {
@@ -26,36 +9,6 @@ export enum ProcessCategory {
   OPERATIONAL = "operational",
   SUPPORT = "support",
 }
-
-// Process model
-export const processes = pgTable("processes", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  category: text("category", { enum: ["strategic", "operational", "support"] }).notNull(),
-  icon: text("icon").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-export const insertProcessSchema = createInsertSchema(processes).pick({
-  name: true,
-  category: true,
-  icon: true,
-});
-
-// Subprocess model
-export const subprocesses = pgTable("subprocesses", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  processId: integer("process_id").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
-export const insertSubprocessSchema = createInsertSchema(subprocesses).pick({
-  name: true,
-  processId: true,
-});
 
 // Document types
 export enum DocumentType {
@@ -65,7 +18,41 @@ export enum DocumentType {
   OTHER = "other",
 }
 
-// Document model
+// Schema definitions
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  username: text("username").notNull().unique(),
+  password: text("password").notNull(),
+  fullName: text("full_name").notNull(),
+  isAdmin: boolean("is_admin").default(false).notNull(),
+  kpiIframeUrl: text("kpi_iframe_url").default(""),
+});
+
+export const processes = pgTable("processes", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  category: text("category", { enum: ["strategic", "operational", "support"] }).notNull(),
+  icon: text("icon").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const subprocesses = pgTable("subprocesses", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  processId: integer("process_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const otherDocTypes = pgTable("other_doc_types", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  icon: text("icon").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const documents = pgTable("documents", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
@@ -83,6 +70,78 @@ export const documents = pgTable("documents", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
+  documentId: integer("document_id").notNull(),
+  userId: integer("user_id").notNull(),
+  text: text("text").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  comments: many(comments),
+}));
+
+export const processesRelations = relations(processes, ({ many }) => ({
+  subprocesses: many(subprocesses),
+}));
+
+export const subprocessesRelations = relations(subprocesses, ({ one, many }) => ({
+  process: one(processes, {
+    fields: [subprocesses.processId],
+    references: [processes.id],
+  }),
+  documents: many(documents),
+}));
+
+export const otherDocTypesRelations = relations(otherDocTypes, ({ many }) => ({
+  documents: many(documents),
+}));
+
+export const documentsRelations = relations(documents, ({ one, many }) => ({
+  subprocess: one(subprocesses, {
+    fields: [documents.subprocessId],
+    references: [subprocesses.id],
+  }),
+  otherDocType: one(otherDocTypes, {
+    fields: [documents.otherDocTypeId],
+    references: [otherDocTypes.id],
+  }),
+  comments: many(comments),
+}));
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+  document: one(documents, {
+    fields: [comments.documentId],
+    references: [documents.id],
+  }),
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+  }),
+}));
+
+// Insert schemas
+export const insertUserSchema = createInsertSchema(users).pick({
+  username: true,
+  password: true,
+  fullName: true,
+  isAdmin: true,
+  kpiIframeUrl: true,
+});
+
+export const insertProcessSchema = createInsertSchema(processes).pick({
+  name: true,
+  category: true,
+  icon: true,
+});
+
+export const insertSubprocessSchema = createInsertSchema(subprocesses).pick({
+  name: true,
+  processId: true,
+});
+
 export const insertDocumentSchema = createInsertSchema(documents).pick({
   name: true,
   type: true,
@@ -97,27 +156,9 @@ export const insertDocumentSchema = createInsertSchema(documents).pick({
   active: true,
 });
 
-// Other document types model
-export const otherDocTypes = pgTable("other_doc_types", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  icon: text("icon").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
-
 export const insertOtherDocTypeSchema = createInsertSchema(otherDocTypes).pick({
   name: true,
   icon: true,
-});
-
-// Comments model
-export const comments = pgTable("comments", {
-  id: serial("id").primaryKey(),
-  documentId: integer("document_id").notNull(),
-  userId: integer("user_id").notNull(),
-  text: text("text").notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const insertCommentSchema = createInsertSchema(comments).pick({
