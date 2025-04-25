@@ -11,13 +11,6 @@ interface SidebarProps {
 export default function Sidebar({ visible, onToggle }: SidebarProps) {
   const { user } = useAuth();
   
-  // In a real implementation, these would come from user.kpiConfig
-  const kpis = [
-    { id: 1, title: "Índice de Calidad", lastUpdate: "15/05/2023", url: "" },
-    { id: 2, title: "Producción Mensual", lastUpdate: "18/05/2023", url: "" },
-    { id: 3, title: "Eficiencia Operativa", lastUpdate: "12/05/2023", url: "" },
-  ];
-  
   return (
     <aside 
       className={`bg-white border-l border-gray-200 overflow-y-auto transition-all duration-300 ${
@@ -39,21 +32,28 @@ export default function Sidebar({ visible, onToggle }: SidebarProps) {
         
         {visible && (
           <div className="space-y-4">
-            {kpis.map((kpi) => (
-              <div key={kpi.id} className="bg-gray-50 p-3 rounded-md border border-gray-200">
-                <h3 className="text-sm font-medium text-secondary mb-2">{kpi.title}</h3>
-                <div className="h-52 bg-white p-2 rounded border border-gray-200 flex items-center justify-center">
-                  {/* Power BI Embed would go here */}
-                  <div className="text-center text-gray-400">
-                    <span className="i-pie-chart-line text-3xl mb-2 block"></span>
-                    <p className="text-xs">Informe de Power BI</p>
-                  </div>
+            {user?.kpiIframeUrl ? (
+              <div className="bg-gray-50 p-3 rounded-md border border-gray-200">
+                <h3 className="text-sm font-medium text-secondary mb-2">Panel de Control</h3>
+                <div className="bg-white rounded border border-gray-200 overflow-hidden" style={{ height: '60vh' }}>
+                  <iframe 
+                    src={user.kpiIframeUrl} 
+                    className="w-full h-full"
+                    title="KPI Dashboard"
+                    frameBorder="0"
+                    allowFullScreen
+                  ></iframe>
                 </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  Última actualización: <span>{kpi.lastUpdate}</span>
-                </p>
               </div>
-            ))}
+            ) : (
+              <div className="bg-gray-50 p-3 rounded-md border border-gray-200 flex flex-col items-center justify-center text-center h-52">
+                <div className="text-gray-400 mb-2">
+                  <span className="i-pie-chart-line text-3xl mb-2 block"></span>
+                </div>
+                <p className="text-sm text-gray-500">No hay panel de KPI configurado.</p>
+                <p className="text-xs text-gray-400 mt-1">Contacte a un administrador para configurar su panel.</p>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -99,7 +99,7 @@ export class MemStorage implements IStorage {
       password: 'andy0101',
       fullName: 'Admin User',
       isAdmin: true,
-      kpiConfig: {}
+      kpiIframeUrl: ""
     });
 
     // Initialize with sample data
@@ -193,7 +193,7 @@ export class MemStorage implements IStorage {
     const user: User = { 
       id, 
       ...userData,
-      kpiConfig: userData.kpiConfig || {}
+      kpiIframeUrl: userData.kpiIframeUrl || ""
     };
     this.users.set(id, user);
     return user;

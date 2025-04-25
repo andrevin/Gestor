@@ -73,7 +73,6 @@ export default function UserTab() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isKpiConfigModalOpen, setIsKpiConfigModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [kpiUrlInput, setKpiUrlInput] = useState("");
 
   // Fetch all users
   const { data: users, isLoading, error } = useQuery<User[]>({
