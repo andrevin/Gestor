@@ -59,9 +59,9 @@ export class MemStorage implements IStorage {
   private documents: Map<number, Document>;
   private otherDocTypes: Map<number, OtherDocType>;
   private comments: Map<number, Comment>;
-  
+
   sessionStore: session.SessionStore;
-  
+
   private userIdCounter: number;
   private processIdCounter: number;
   private subprocessIdCounter: number;
@@ -76,7 +76,7 @@ export class MemStorage implements IStorage {
     this.documents = new Map();
     this.otherDocTypes = new Map();
     this.comments = new Map();
-    
+
     this.userIdCounter = 1;
     this.processIdCounter = 1;
     this.subprocessIdCounter = 1;
@@ -88,7 +88,7 @@ export class MemStorage implements IStorage {
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000  // prune expired entries every 24h
     });
-    
+
     // Initialize with admin user
     this.createUser({
       username: 'andrevin',
@@ -97,7 +97,7 @@ export class MemStorage implements IStorage {
       isAdmin: true,
       kpiConfig: {}
     });
-    
+
     // Initialize with sample data
     this.initializeSampleData();
   }
@@ -109,30 +109,30 @@ export class MemStorage implements IStorage {
       category: 'strategic',
       icon: 'presentation-line'
     });
-    
+
     const operational = this.createProcess({
       name: 'Producción',
       category: 'operational',
       icon: 'hammer-line'
     });
-    
+
     const support = this.createProcess({
       name: 'Recursos Humanos',
       category: 'support',
       icon: 'user-settings-line'
     });
-    
+
     // Create sample subprocesses
     const subprocess1 = this.createSubprocess({
       name: 'Control de Calidad',
       processId: operational.id
     });
-    
+
     const subprocess2 = this.createSubprocess({
       name: 'Procesamiento',
       processId: operational.id
     });
-    
+
     // Create sample documents
     this.createDocument({
       name: 'Manual de Control de Calidad en Línea',
@@ -146,7 +146,7 @@ export class MemStorage implements IStorage {
       keywords: ['calidad', 'línea', 'producción'],
       active: true
     });
-    
+
     this.createDocument({
       name: 'SOP-001: Inspección de Materias Primas',
       type: 'sop',
@@ -159,7 +159,7 @@ export class MemStorage implements IStorage {
       keywords: ['inspección', 'materia prima', 'control'],
       active: true
     });
-    
+
     // Create sample other doc type
     this.createOtherDocType({
       name: 'Normativas Internas',
@@ -173,9 +173,14 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username.toLowerCase() === username.toLowerCase()
-    );
+    try {
+      return Array.from(this.users.values()).find(
+        (user) => user.username.toLowerCase() === username.toLowerCase()
+      );
+    } catch (error) {
+      console.error('Error al buscar usuario:', error);
+      return undefined;
+    }
   }
 
   async createUser(userData: InsertUser): Promise<User> {
@@ -197,7 +202,7 @@ export class MemStorage implements IStorage {
   async updateUserKpiConfig(id: number, kpiConfig: any): Promise<User | undefined> {
     const user = await this.getUser(id);
     if (!user) return undefined;
-    
+
     const updatedUser = { ...user, kpiConfig };
     this.users.set(id, updatedUser);
     return updatedUser;
@@ -228,7 +233,7 @@ export class MemStorage implements IStorage {
   async updateProcess(id: number, processData: InsertProcess): Promise<Process | undefined> {
     const process = await this.getProcess(id);
     if (!process) return undefined;
-    
+
     const updatedProcess = { 
       ...process, 
       ...processData, 
@@ -273,7 +278,7 @@ export class MemStorage implements IStorage {
   async updateSubprocess(id: number, subprocessData: InsertSubprocess): Promise<Subprocess | undefined> {
     const subprocess = await this.getSubprocess(id);
     if (!subprocess) return undefined;
-    
+
     const updatedSubprocess = { 
       ...subprocess, 
       ...subprocessData, 
@@ -300,11 +305,11 @@ export class MemStorage implements IStorage {
     let documents = Array.from(this.documents.values()).filter(
       document => document.subprocessId === subprocessId && document.active
     );
-    
+
     if (type) {
       documents = documents.filter(document => document.type === type);
     }
-    
+
     return documents;
   }
 
@@ -330,7 +335,7 @@ export class MemStorage implements IStorage {
   async updateDocument(id: number, documentData: InsertDocument): Promise<Document | undefined> {
     const document = await this.getDocument(id);
     if (!document) return undefined;
-    
+
     const updatedDocument = { 
       ...document, 
       ...documentData, 
@@ -369,7 +374,7 @@ export class MemStorage implements IStorage {
   async updateOtherDocType(id: number, otherDocTypeData: InsertOtherDocType): Promise<OtherDocType | undefined> {
     const otherDocType = await this.getOtherDocType(id);
     if (!otherDocType) return undefined;
-    
+
     const updatedOtherDocType = { 
       ...otherDocType, 
       ...otherDocTypeData, 
