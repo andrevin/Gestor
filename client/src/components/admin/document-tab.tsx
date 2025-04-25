@@ -274,9 +274,17 @@ export default function DocumentTab() {
       }
       data.subprocessId = null;
     } else {
+      if (!selectedProcess) {
+        toast({
+          title: "Error",
+          description: "Debe seleccionar un proceso",
+          variant: "destructive", 
+        });
+        return;
+      }
       if (!data.subprocessId) {
         toast({
-          title: "Error", 
+          title: "Error",
           description: "Debe seleccionar un subproceso",
           variant: "destructive",
         });
@@ -284,6 +292,17 @@ export default function DocumentTab() {
       }
       data.otherDocTypeId = null;
     }
+
+    // Validate required fields
+    if (!data.name || !data.type || !data.content || !data.approvers || !data.approvalDate) {
+      toast({
+        title: "Error",
+        description: "Todos los campos obligatorios deben estar completos",
+        variant: "destructive",
+      });
+      return;
+    }
+
     createMutation.mutate(data as InsertDocument);
   };
 
