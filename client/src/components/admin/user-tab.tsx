@@ -59,10 +59,9 @@ const userSchema = z.object({
   isAdmin: z.boolean().default(false),
 });
 
-// Schema for KPI config form
+// Schema for KPI iframe URL form
 const kpiConfigSchema = z.object({
-  powerBiUrls: z.array(z.string()).default([]),
-  kpiConfigRaw: z.string().optional()
+  kpiIframeUrl: z.string().default("")
 });
 
 type UserFormValues = z.infer<typeof userSchema>;
@@ -97,8 +96,7 @@ export default function UserTab() {
   const kpiConfigForm = useForm<KpiConfigFormValues>({
     resolver: zodResolver(kpiConfigSchema),
     defaultValues: {
-      powerBiUrls: [],
-      kpiConfigRaw: ""
+      kpiIframeUrl: ""
     },
   });
 
@@ -154,42 +152,16 @@ export default function UserTab() {
   const onCreateSubmit = (data: UserFormValues) => {
     createMutation.mutate({
       ...data,
-      kpiConfig: {}
+      kpiIframeUrl: ""
     });
   };
 
   // Handle KPI config form submission
   const onKpiConfigSubmit = (data: KpiConfigFormValues) => {
     if (selectedUser) {
-      let kpiConfig = selectedUser.kpiConfig || {};
-      
-      // Update with new settings
-      kpiConfig = {
-        ...kpiConfig,
-        powerBiUrls: data.powerBiUrls
-      };
-      
-      // If there's raw JSON config, try to parse it
-      if (data.kpiConfigRaw) {
-        try {
-          const parsedConfig = JSON.parse(data.kpiConfigRaw);
-          kpiConfig = {
-            ...kpiConfig,
-            ...parsedConfig
-          };
-        } catch (e) {
-          toast({
-            title: "Error en formato JSON",
-            description: "La configuración personalizada no tiene un formato JSON válido.",
-            variant: "destructive",
-          });
-          return;
-        }
-      }
-      
       updateKpiConfigMutation.mutate({ 
         id: selectedUser.id, 
-        data: kpiConfig 
+        data: data.kpiIframeUrl 
       });
     }
   };
@@ -198,40 +170,12 @@ export default function UserTab() {
   const handleConfigureKpi = (user: User) => {
     setSelectedUser(user);
     
-    // Extract Power BI URLs from user config
-    const powerBiUrls = user.kpiConfig?.powerBiUrls || [];
-    
-    // Set the raw JSON value, but exclude powerBiUrls to avoid duplication
-    const { powerBiUrls: _, ...otherConfig } = user.kpiConfig || {};
-    const kpiConfigRaw = Object.keys(otherConfig).length > 0 
-      ? JSON.stringify(otherConfig, null, 2) 
-      : "";
-    
+    // Set iframe URL from user data
     kpiConfigForm.reset({
-      powerBiUrls,
-      kpiConfigRaw
+      kpiIframeUrl: user.kpiIframeUrl || ""
     });
     
     setIsKpiConfigModalOpen(true);
-  };
-
-  // Handle adding Power BI URL
-  const addPowerBiUrl = () => {
-    if (!kpiUrlInput.trim()) return;
-    
-    const currentUrls = kpiConfigForm.getValues("powerBiUrls") || [];
-    
-    if (!currentUrls.includes(kpiUrlInput)) {
-      kpiConfigForm.setValue("powerBiUrls", [...currentUrls, kpiUrlInput]);
-    }
-    
-    setKpiUrlInput("");
-  };
-
-  // Handle removing Power BI URL
-  const removePowerBiUrl = (url: string) => {
-    const currentUrls = kpiConfigForm.getValues("powerBiUrls") || [];
-    kpiConfigForm.setValue("powerBiUrls", currentUrls.filter(u => u !== url));
   };
 
   // Filter users by search term
@@ -311,9 +255,9 @@ export default function UserTab() {
                       )}
                     </TableCell>
                     <TableCell>
-                      {user.kpiConfig && user.kpiConfig.powerBiUrls ? (
+                      {user.kpiIframeUrl ? (
                         <Badge variant="outline">
-                          {(user.kpiConfig.powerBiUrls as string[]).length} informes
+                          Configurado
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="bg-muted/50">
