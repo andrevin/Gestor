@@ -260,14 +260,14 @@ export default function SubprocessTab() {
         <CardContent className="p-4">
           <div className="flex mb-4 gap-2">
             <Select 
-              value={selectedProcess ? String(selectedProcess) : ""} 
-              onValueChange={(value) => setSelectedProcess(value ? Number(value) : null)}
+              value={selectedProcess ? String(selectedProcess) : "all"} 
+              onValueChange={(value) => setSelectedProcess(value === "all" ? null : Number(value))}
             >
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Filtrar por proceso" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los procesos</SelectItem>
+                <SelectItem value="all">Todos los procesos</SelectItem>
                 {processes?.map((process) => (
                   <SelectItem key={process.id} value={String(process.id)}>
                     {process.name}
