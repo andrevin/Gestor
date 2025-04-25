@@ -28,9 +28,7 @@ export default function Header() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link href="/">
-              <svg className="h-8 w-auto text-primary" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-                <path fill="currentColor" d="M16 2C8.268 2 2 8.268 2 16s6.268 14 14 14 14-6.268 14-14S23.732 2 16 2zm-4.95 19.535H8.466v-7.07H11.05v7.07zm6.583 0h-2.583v-7.07h2.583v7.07zm6.583 0h-2.583v-7.07h2.583v7.07z"/>
-              </svg>
+              <img src="/Logo Italimentos OF.webp" alt="Italimentos" className="h-8 w-auto" />
             </Link>
           </div>
           <div className="flex items-center space-x-4">
