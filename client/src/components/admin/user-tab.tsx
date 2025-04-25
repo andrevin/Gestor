@@ -391,65 +391,18 @@ export default function UserTab() {
             <form onSubmit={kpiConfigForm.handleSubmit(onKpiConfigSubmit)} className="space-y-4">
               <FormField
                 control={kpiConfigForm.control}
-                name="powerBiUrls"
-                render={() => (
-                  <FormItem>
-                    <FormLabel>URLs de Informes Power BI</FormLabel>
-                    <div className="flex gap-2 mb-2">
-                      <Input
-                        placeholder="URL del informe Power BI"
-                        value={kpiUrlInput}
-                        onChange={(e) => setKpiUrlInput(e.target.value)}
-                        className="flex-1"
-                      />
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        onClick={addPowerBiUrl}
-                      >
-                        Agregar
-                      </Button>
-                    </div>
-                    <div className="space-y-2 mt-2">
-                      {kpiConfigForm.getValues("powerBiUrls")?.map((url, index) => (
-                        <div key={index} className="flex items-center justify-between rounded-md border p-2">
-                          <span className="text-sm truncate max-w-[400px]">{url}</span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => removePowerBiUrl(url)}
-                            className="h-7 w-7"
-                          >
-                            <span className="text-lg">×</span>
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                    <FormDescription>
-                      Agregue las URLs de los informes de Power BI que desea mostrar en el panel del usuario.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={kpiConfigForm.control}
-                name="kpiConfigRaw"
+                name="kpiIframeUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Configuración Personalizada (JSON)</FormLabel>
+                    <FormLabel>URL del Panel de KPI</FormLabel>
                     <FormControl>
-                      <Textarea 
-                        placeholder="{}" 
+                      <Input 
+                        placeholder="https://app.powerbi.com/..." 
                         {...field} 
-                        value={field.value || ""}
-                        rows={5}
                       />
                     </FormControl>
                     <FormDescription>
-                      Configuración avanzada en formato JSON para opciones específicas de visualización.
+                      Ingrese la URL del panel de control de PowerBI o cualquier otra herramienta que proporcione un iframe para visualización.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>

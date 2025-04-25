@@ -15,7 +15,7 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
   getAllUsers(): Promise<User[]>;
-  updateUserKpiConfig(id: number, kpiConfig: any): Promise<User | undefined>;
+  updateUserKpiConfig(id: number, kpiIframeUrl: string): Promise<User | undefined>;
 
   // Process methods
   getProcess(id: number): Promise<Process | undefined>;
@@ -203,11 +203,11 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values());
   }
 
-  async updateUserKpiConfig(id: number, kpiConfig: any): Promise<User | undefined> {
+  async updateUserKpiConfig(id: number, kpiIframeUrl: string): Promise<User | undefined> {
     const user = await this.getUser(id);
     if (!user) return undefined;
 
-    const updatedUser = { ...user, kpiConfig };
+    const updatedUser = { ...user, kpiIframeUrl };
     this.users.set(id, updatedUser);
     return updatedUser;
   }
