@@ -1,0 +1,125 @@
+
+
+Title: Sistema de Gestión Documental 
+
+Objective:
+Create an internal web application to visualize, navigate, and manage the organization's process structure, accessing associated documentation (manuals, SOPs, templates), and displaying key performance indicators (KPIs). The application must be highly configurable through an admin panel and have its main user interface in Spanish.
+
+Language: Spanish
+
+Header:
+Displays the "Italimentos" logo.
+On the right, it welcomes the user ("Bienvenido, [User Name]"), shows a settings icon (gear) for administrators only, and a "Logout" button.
+
+Layout:
+The main screen is divided into two vertical sections:
+
+Main Area (Approx. 75% width): Displays the Process Map.
+
+Sidebar (Approx. 25% width): Displays KPIs. (This should be customizable per user via the admin panel.)
+
+Process Navigation:
+Process Map (75% width):
+
+Macroprocess View:
+
+Strategic Processes: White background – highlighted in green.
+
+Operational Processes: White background – highlighted in blue.
+
+Support Processes: White background – highlighted in gray.
+
+Each process is shown in a card with:
+
+A representative icon (customizable in the admin panel when creating the process),
+
+Its name,
+
+The number of associated subprocesses (this counter must be functional).
+
+Other Documentation (Visible to administrators only)
+
+Customizable cards via the admin panel.
+
+Subprocess View:
+Displays visually (e.g., squares) the subprocesses of the selected department.
+Subprocesses (name) must be configurable (create, update, delete) from the admin panel.
+Each subprocess card includes:
+
+A counter showing how many associated documents exist.
+
+A different icon for each document type (Manuals, SOPs, Instructions).
+
+Documentation View (by Subprocess):
+Three distinct sections: "Manuals", "SOPs", "Templates", but other formats can be added through the admin panel.
+Each section contains a list of document links with descriptive names.
+The number and loading of documents must be configurable (add, update, delete, activate/deactivate) per subprocess via the admin panel.
+
+Other Documentation View:
+List of documents by date or ID defined by the user in the admin panel.
+
+Indicators (KPIs) (25%):
+Located in the sidebar.
+Must be customizable per user and optimized to embed Power BI reports.
+The admin user will only need to input the URL, and the panel will allow configuration of various Power BI display options.
+
+Admin Panel:
+Access: Gear icon (⚙️) in the top-right corner (admin-only).
+
+Admin Functionalities (Full CRUD):
+
+Manage Macroprocesses: Create new macroprocesses, update existing ones (name, category), delete them. Ability to upload and preconfigure icons.
+
+Manage Subprocesses: Create new subprocesses, update existing ones (name, associated macroprocess), delete them.
+
+Manage Documentation: For each subprocess, upload new documents, edit existing ones (name, file, associated subprocess or "Other Documents" card), and delete them in the sections of Manuals, SOPs, and Templates. Metadata should include: keywords, approval date, version, and approvers. This data should reflect in the document view.
+
+Manage Users: Create new users (admin or read-only). For each user, configure their iframe for KPIs. Update or deactivate existing users.
+
+Other Documents: Manage the cards for other document types.
+
+Login Page:
+Login screen must be split:
+
+Left 50%: Login form.
+
+Right 50%: Configurable image.
+
+Technical Requirements:
+
+Layer	Suggested Technology
+Backend	Node.js + Express.js
+Database	PostgreSQL
+Frontend	React (Next.js optional)
+Allow discussions and notes on each document.
+
+Visual Style:
+Modern, clean, professional, visually pleasant. Intuitive interface.
+
+UI Language: The main user interface must be in Spanish.
+
+Colors:
+
+Primary: #7dba42 (Green)
+
+Secondary/Neutral: #5c646f (Gray)
+
+Ensure good contrast.
+
+Interactivity: Smooth transitions, clear visual feedback on clickable elements.
+
+Responsiveness: Basic support for tablets.
+
+Validation and Sanitization:
+Prevent SQL/JS injection.
+
+Scalability:
+RESTful API, validation/sanitization (prevent XSS/SQLi), scalable (optional microservices).
+
+Non-Functional Requirements:
+Admin Credentials:
+
+Username: andrevin
+
+Password: andy0101
+
